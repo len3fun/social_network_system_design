@@ -1,0 +1,210 @@
+openapi: "3.1.0"
+info:
+  version: "1.0.0"
+  title: Social network API
+
+paths:
+  /users/{id}:
+    get:
+      summary: Returns a user's profile
+      responses:
+        '200':
+          description: User's profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: No such user
+  /users/{id}/feed:
+    get:
+      summary: Returns a list of user's posts
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '404':
+          description: No such user
+
+  /users/{id}/friends:
+    get:
+      summary: Returns a list of user's friends
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User's friends list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: No such user
+    post:
+      summary: Add a user to a friends list
+      responses:
+        '201':
+          description: User added
+  /users/{id}/friends/{id}:
+    delete:
+      summary: Deletes a user from a frields list
+      responses:
+        '204':
+          description: User deleted
+        '404':
+          description: No such user or friend
+  /feed:
+    get:
+      summary: Returns a list of posts
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Creates a post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    content:
+                      type: string
+                media:
+                  type: string
+                  format: binary
+  /chats:
+    get:
+      summary: Returns a list of chats
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chat'
+  /chats/{id}:
+    get:
+      summary: Returns a list of messages from chat
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of messages in a chat
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '404':
+          description: No such chat
+    post:
+      summary: Sends a message to a chat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageInput'
+      responses:
+        '201':
+          description: Message sent
+
+components:
+  schemas:
+    User:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        surname:
+          type: string
+    Post:
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: object
+    Chat:
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+    Message:
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        timestamp:
+          type: integer
+        from_user_id:
+          type: integer
+    MessageInput:
+      properties:
+        text:
+          type: string
